@@ -4,6 +4,19 @@ import { getParameterByName } from "../utils/url_query.js";
 
 var statusQuery = getParameterByName('open');
 
+// Function to get cookie by name
+function getCookie(name) {
+    let matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ));
+    return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+// Function to delete cookie by name
+function deleteCookie(name) {
+    document.cookie = name + "=; Max-Age=-99999999;";
+}
+
 function getIssues() {
     var requestOptions = {
         method: 'GET',
@@ -53,6 +66,18 @@ function getIssues() {
 
 function initialize() {
     getIssues();
+
+    const logoutButton = document.getElementById('logout-button');
+    const token = getCookie('token');
+
+    if (!token) {
+        logoutButton.style.display = 'none';
+    }
+
+    logoutButton.addEventListener('click', function() {
+        deleteCookie('token');
+        window.location.href = 'https://scipio.hlcyn.co/login/';
+    });
 }
 
 window.onload = initialize;
